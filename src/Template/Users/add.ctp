@@ -2,6 +2,9 @@
 /**
   * @var \App\View\AppView $this
   */
+use Cake\Core\Configure;
+
+if (Configure::read('recaptcha_enable')):
 $this->append('script');
 ?>
 <script>
@@ -13,6 +16,7 @@ $this->append('script');
     }
 </script>
 <?php $this->end() ?>
+<?php endif ?>
 <div class="page-header">
     <h2><?= __('Create an Account') ?></h2>
 </div>

@@ -44,12 +44,16 @@ a security feature, so I highly suggest implementing it on your site.
 
 3. Clone the repo on your server where you want it to live:
 
+```
 	git clone https://github.com/compcake/compcake.git
+```
 
 4. Use composer to fetch all the project dependencies.
 
+```
 	cd compcake/
 	composer update
+```
 
 5. Edit the main configuration file, config/app.php. There are plenty of
 comments to guide you. Be careful to follow the PHP syntax as you make changes.
@@ -61,8 +65,10 @@ things are working.
 
 6. Navigate to the config/schema subdirectory and build the SqlLite database.
 
+```
 	cd config/schema
 	make all
+```
 
 7. Navigate to the website and login as the test admin account. The default
 login credentials are: testuser@test.com, password letmein
@@ -71,7 +77,9 @@ user details to something better than the default Test Admin.
 
 8. You will probably want to edit the rules, which live at:
 
+```
 	src/Template/Pages/Rules.ctp
+```
 
 That's it... you should be ready to start accepting entries.
 
