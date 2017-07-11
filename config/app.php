@@ -300,7 +300,7 @@ return [
             //'port' => 'non_standard_port_number',
             'username' => 'my_app',
             'password' => 'secret',
-            'database' => 'config/db',
+            'database' => '../config/db',
             'encoding' => 'utf8',
             'timezone' => 'UTC',
             'flags' => [],
