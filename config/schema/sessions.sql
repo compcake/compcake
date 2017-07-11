@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS sessions;
+CREATE TABLE sessions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  location_id INTEGER NOT NULL,
+  d DATETIME NOT NULL,
+  is_bos BOOLEAN,
+  FOREIGN KEY(location_id) REFERENCES locations(id)
+);

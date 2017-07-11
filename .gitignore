@@ -1,0 +1,6 @@
+/vendor/*
+/tmp/*
+/logs/*
+/bower_components/*
+/node_modules/*
+/config/schema/backup.sql
