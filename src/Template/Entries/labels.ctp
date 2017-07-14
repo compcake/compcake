@@ -3,10 +3,12 @@
   * @var \App\View\AppView $this
   */
 use Cake\Routing\Router;
+use Cake\Core\Configure;
 
 echo $this->element('PrintScript');
 
 $entryData = [
+    [Configure::read('competition')],
     [__('Entry Number'), $this->Number->format($entry->id)],
     [__('Name'), h($entry->name)],
     [__('Description'), h($entry->description)],
