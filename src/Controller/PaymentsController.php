@@ -81,6 +81,7 @@ class PaymentsController extends AppController
                     Configure::read('paypal_clientid'),
                     Configure::read('paypal_secret'))
             );
+	    $apiContext->setConfig(['mode' => 'live']);
             $payer = new Payer();
             $payer->setPaymentMethod("paypal");
             $items = array();
