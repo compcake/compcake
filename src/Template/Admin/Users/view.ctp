@@ -7,6 +7,10 @@
     <h3><?= h($user->first_name) . " " . h($user->last_name) ?></h3>
     <table class="table">
         <tr>
+            <th scope="row"><?= __('User ID') ?></th>
+            <td><?= h($user->id) ?></td>
+        </tr>
+        <tr>
             <th scope="row"><?= __('Email') ?></th>
             <td><?= h($user->email) ?></td>
         </tr>

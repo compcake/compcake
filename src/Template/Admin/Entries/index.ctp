@@ -25,7 +25,7 @@
             <?php foreach ($entries as $entry): ?>
             <tr>
                 <td><?= $this->Number->format($entry->id) ?></td>
-                <td><?= $entry->has('user') ? $this->Html->link($entry->user->id, ['controller' => 'Users', 'action' => 'view', $entry->user->id]) : '' ?></td>
+                <td><?= $this->Html->link($entry->user_id, ['controller' => 'Users', 'action' => 'view', $entry->user_id]) ?></td>
                 <td><?= h($entry->name) ?></td>
                 <td><?= h($entry->description) ?></td>
                 <td><?= h($entry->special_ingredients) ?></td>
