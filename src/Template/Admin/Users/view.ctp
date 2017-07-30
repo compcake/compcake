@@ -63,8 +63,8 @@
             <td><?= $user->steward ? __('Yes') : __('No') ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('Interested in Staff?') ?></th>
-            <td><?= $user->volunteer ? __('Yes') : __('No') ?></td>
+            <th scope="row"><?= __('Interested in Volunteering?') ?></th>
+            <td><?= $user->staff ? __('Yes') : __('No') ?></td>
         </tr>
     </table>
     <div>
