@@ -3,36 +3,24 @@
   * @var \App\View\AppView $this
   */
 ?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New User'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Volunteers'), ['controller' => 'Volunteers', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Volunteer'), ['controller' => 'Volunteers', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Entries'), ['controller' => 'Entries', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Entry'), ['controller' => 'Entries', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Roles'), ['controller' => 'Roles', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Role'), ['controller' => 'Roles', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
 <div class="users index large-9 medium-8 columns content">
     <h3><?= __('Users') ?></h3>
-    <table cellpadding="0" cellspacing="0">
+    <table class="table">
         <thead>
             <tr>
                 <th scope="col"><?= $this->Paginator->sort('id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('email') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('password') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('first_name') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('last_name') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('address1') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('address2') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('address3') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('city') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('province') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('province', 'State / Province') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('country') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('postcode') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('aha_number') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('postcode', 'ZIP / Postal Code') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('aha_number', "AHA Number") ?></th>
+                <th scope="col"><?= $this->Paginator->sort('bjcp', "BJCP ID") ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
         </thead>
@@ -41,7 +29,6 @@
             <tr>
                 <td><?= $this->Number->format($user->id) ?></td>
                 <td><?= h($user->email) ?></td>
-                <td><?= h($user->password) ?></td>
                 <td><?= h($user->first_name) ?></td>
                 <td><?= h($user->last_name) ?></td>
                 <td><?= h($user->address1) ?></td>
@@ -52,6 +39,7 @@
                 <td><?= h($user->country) ?></td>
                 <td><?= h($user->postcode) ?></td>
                 <td><?= h($user->aha_number) ?></td>
+                <td><?= h($user->bjcp) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $user->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $user->id]) ?>
