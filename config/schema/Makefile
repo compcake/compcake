@@ -27,5 +27,7 @@ roles:
 	cat roles.sql |sqlite3 $(DB)
 users_roles:
 	cat users_roles.sql |sqlite3 $(DB)
+passwordresets:
+	cat passwordresets.sql |sqlite3 $(DB)
 
-all: users payments sessions locations judges flights judges_flights entries entries_flights roles users_roles
+all: users payments sessions locations judges flights judges_flights entries entries_flights roles users_roles passwordresets

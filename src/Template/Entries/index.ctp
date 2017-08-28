@@ -81,7 +81,7 @@ foreach ($entries as $entry) {
             ]);
         ?>
     <?php endif ?>
-    <?php if ($unpaidEntries): ?>
+    <?php if ($unpaidEntries > 0): ?>
         <?= $this->Form->button($payment,
             [
                 'type' => 'button',

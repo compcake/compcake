@@ -12,5 +12,8 @@ echo $this->Form->end();
 </div>
 &nbsp;
 <div class="well">
-Not yet registered? <a href="add">Create an account</a>
+<?= __('Not yet registered? ') . $this->Html->link(__('Create an account'),
+        ['action' => 'add']) . '<br/>'; ?>
+<?= __('Forgotten password? ') . $this->Html->link(__('Reset password'),
+        ['controller' => 'passwordresets', 'action' => 'add']); ?>
 </div>
