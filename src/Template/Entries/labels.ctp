@@ -24,6 +24,7 @@ $printbtn = '<span class="glyphicon glyphicon-print">&nbsp;</span>' . __('Print'
     <div class="jumbotron">
         <h1><?= 'Instructions'?></h1>
         <?= __('Cut out labels and affix to each bottle using a rubber band. DO NOT USE TAPE!') ?>
+        <?= __('If labels do not print, you need to enable popups for this website in your browser.') ?>
     </div>
     <div class="printable-area">
     <hr/>
