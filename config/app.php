@@ -59,6 +59,12 @@ return [
      */
 
     /**
+     * PayPal mode:
+     * 'live' for live keys, 'sandbox' for sandbox keys.
+     */
+    'paypal_mode' => 'live',
+
+    /**
      * Debug Level:
      *
      * Production Mode:

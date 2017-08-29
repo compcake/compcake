@@ -64,7 +64,7 @@ class PaymentsController extends AppController
                     Configure::read('paypal_clientid'),
                     Configure::read('paypal_secret'))
             );
-	        $apiContext->setConfig(['mode' => Configure::read('debug') ? 'sandbox' : 'live']);
+            $apiContext->setConfig(['mode' => Configure::read('paypal_mode')]);
             $payer = new Payer();
             $payer->setPaymentMethod("paypal");
             $items = array();
@@ -141,7 +141,7 @@ class PaymentsController extends AppController
                     Configure::read('paypal_clientid'),
                     Configure::read('paypal_secret'))
             );
-            $apiContext->setConfig(['mode' => Configure::read('debug') ? 'sandbox' : 'live']);
+            $apiContext->setConfig(['mode' => Configure::read('paypal_mode')]);
             $pmt = Payment::get($payment->paymentid, $apiContext);
             $execution = new PaymentExecution();
             $execution->setPayerId($payment->payerid);
