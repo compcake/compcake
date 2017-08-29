@@ -54,11 +54,6 @@ return [
      */
 
     /**
-     * Endpoint to use. api.sandbox.paypal.com is for testing, api.paypal.com is for production.
-     */
-    'paypal_endpoint' => 'https://api.sandbox.paypal.com',
-
-    /**
      * Debug Level:
      *
      * Production Mode:
