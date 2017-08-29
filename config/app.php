@@ -28,6 +28,11 @@ return [
      */
     'entry_fee' => 7.00,
 
+     /**
+      * Return e-mail address to use for password reset emails.
+      */
+     'reset_email' => 'no-reply@nowhere.net',
+
     /**
      * ReCAPTCHA settings. Set 'recaptcha_enable' to true, and put your Google registered site key and secret
      * below to enable reCAPTCHA on the user signup page. To get a reCAPTCHA site key, visit the URL:
