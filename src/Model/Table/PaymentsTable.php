@@ -66,8 +66,20 @@ class PaymentsTable extends Table
             ->allowEmpty('total');
 
         $validator
-            ->integer('paymentid')
+            ->maxLengthBytes('paymentid', 64)
             ->allowEmpty('paymentid');
+
+        $validator
+            ->maxLengthBytes('token', 64)
+            ->allowEmpty('token');
+
+        $validator
+            ->maxLengthBytes('payerid', 64)
+            ->allowEmpty('payerid');
+
+        $validator
+            ->boolean('executed')
+            ->allowEmpty('executed');
 
         return $validator;
     }

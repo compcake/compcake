@@ -10,6 +10,7 @@ use PayPal\Api\Item;
 use PayPal\Api\ItemList;
 use PayPal\Api\Payer;
 use PayPal\Api\Payment;
+use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
 
@@ -20,23 +21,6 @@ use PayPal\Api\Transaction;
  */
 class PaymentsController extends AppController
 {
-    /**
-     * View method
-     *
-     * @param string|null $id Payment id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $payment = $this->Payments->get($id, [
-            'contain' => ['Entries']
-        ]);
-
-        $this->set('payment', $payment);
-        $this->set('_serialize', ['payment']);
-    }
-
     /**
      * Add method
      *
@@ -58,8 +42,7 @@ class PaymentsController extends AppController
             [
                 'qty' => $qty,
                 'total' => $total,
-                'user_id' => $uid,
-                'paymentid' => 0
+                'user_id' => $uid
             ]);
         if ($this->Payments->save($payment)) {
             /*
@@ -81,7 +64,7 @@ class PaymentsController extends AppController
                     Configure::read('paypal_clientid'),
                     Configure::read('paypal_secret'))
             );
-	    $apiContext->setConfig(['mode' => 'live']);
+	        $apiContext->setConfig(['mode' => Configure::read('debug') ? 'sandbox' : 'live']);
             $payer = new Payer();
             $payer->setPaymentMethod("paypal");
             $items = array();
@@ -108,18 +91,18 @@ class PaymentsController extends AppController
             $redirectUrls = new RedirectUrls();
             $redirectUrls->setReturnUrl(Router::url(['action' => 'complete', $payment->id], true))
                 ->setCancelUrl(Router::url(['action' => 'delete', $payment->id], true));
-            $payment = new Payment();
-            $payment->setIntent("sale")
+            $pmt = new Payment();
+            $pmt->setIntent("sale")
                 ->setPayer($payer)
                 ->setRedirectUrls($redirectUrls)
                 ->setTransactions(array($transaction));
             try {
-                $payment->create($apiContext);
-            } catch (Exception $ex) {
-                $this->Flash->error(__('PayPal payment failed. Please try again later.'));
+                $pmt->create($apiContext);
+            } catch (\PayPal\Exception\PayPalConnectionException $ex) {
+                $this->Flash->error(__('Unable to process payment, PayPal returned error: ' . $ex->getMessage()));
                 return $this->redirect(['controller' => 'entries', 'action' => 'index']);
             }
-            return $this->redirect($payment->getApprovalLink());
+            return $this->redirect($pmt->getApprovalLink());
         } else {
             $this->Flash->error(__('A new payment transaction could not be created. Please try again.'));
             return $this->redirect(['controller' => 'entries', 'action' => 'index']);
@@ -139,19 +122,53 @@ class PaymentsController extends AppController
     {
         $this->request->allowMethod(['get', 'complete']);
         $uid = $this->Auth->user('id');
-        $entriesTable = TableRegistry::get('Entries');
         $payment = $this->Payments->get($id);
         if ($payment->user_id != $uid) {
             throw new NotFoundException;
         }
-        $payment = $this->Payments->patchEntity($payment, ['paymentid' => $this->request->param('paymentId')]);
-        $this->Payments->save($payment);
-        $paidEntriesUpdate = $entriesTable->query();
-        $paidEntriesUpdate->update()
-            ->set(['paid' => true])
-            ->where(['user_id' => $uid, 'payment_id' => $payment->id])
-            ->execute();
-        $this->Flash->success(__('Thank you for your payment!'));
+        $payment = $this->Payments->patchEntity($payment,
+            [
+                'paymentid' => $this->request->query('paymentId'),
+                'token' => $this->request->query('token'),
+                'payerid' => $this->request->query('PayerID')
+            ]);
+        if ($this->Payments->save($payment)) {
+            /*
+             * Create a apiContext object and set up the payment transaction.
+             */
+            $apiContext = new \PayPal\Rest\ApiContext(
+                new \PayPal\Auth\OAuthTokenCredential(
+                    Configure::read('paypal_clientid'),
+                    Configure::read('paypal_secret'))
+            );
+            $apiContext->setConfig(['mode' => Configure::read('debug') ? 'sandbox' : 'live']);
+            $pmt = Payment::get($payment->paymentid, $apiContext);
+            $execution = new PaymentExecution();
+            $execution->setPayerId($payment->payerid);
+            $transaction = new Transaction();
+            $amount = new Amount();
+            $amount->setCurrency('USD');
+            $amount->setTotal($payment->total);
+            $transaction->setAmount($amount);
+            $execution->addTransaction($transaction);
+            try {
+                $pmt->execute($execution, $apiContext);
+                $payment = $this->Payments->patchEntity($payment, ['executed' => true]);
+                if ($this->Payments->save($payment)) {
+                    $entriesTable = TableRegistry::get('Entries');
+                    $paidEntriesUpdate = $entriesTable->query();
+                    $paidEntriesUpdate->update()
+                        ->set(['paid' => true])
+                        ->where(['user_id' => $uid, 'payment_id' => $payment->id])
+                        ->execute();
+                    $this->Flash->success(__('Thank you for your payment!'));
+                }
+            } catch (\PayPal\Exception\PayPalConnectionException $ex) {
+                $this->Flash->error(__('Unable to process payment, PayPal returned error: ' . $ex->getMessage()));
+            }
+        } else {
+            $this->Flash->error(__('Unable to update payment record'));
+        }
         return $this->redirect(['controller' => 'entries', 'action' => 'index']);
     }
 
@@ -171,14 +188,10 @@ class PaymentsController extends AppController
         if ($payment->user_id != $this->Auth->user('id')) {
             throw new NotFoundException;
         }
-        if ($payment->paymentid > 0) {
-            $this->Flash->error(__('Cannot cancel a payment that has been processed.'));
+        if ($this->Payments->delete($payment)) {
+            $this->Flash->success(__('The payment has been successfully canceled.'));
         } else {
-            if ($this->Payments->delete($payment)) {
-                $this->Flash->success(__('The payment has been successfully canceled.'));
-            } else {
-                $this->Flash->error(__('The payment record was not be deleted, but the payment was canceled.'));
-            }
+            $this->Flash->error(__('The payment record was not be deleted, but the payment was canceled.'));
         }
         return $this->redirect(['controller' => 'entries', 'action' => 'index']);
     }
