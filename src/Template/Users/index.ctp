@@ -22,7 +22,7 @@ foreach ($users as $user) {
     $userTable[] = ['Country', h($user->country)];
     $userTable[] = ['ZIP / Postal Code', h($user->postcode)];
     $userTable[] = ['AHA Member ID', h($user->aha_number)];
-    $userTable[] = ['Club Affiliation', h($user->affiliation)];
+    $userTable[] = ['Club Affiliation', h($user->club)];
     $userTable[] = ['BJCP ID', h($user->bjcp)];
     $userTable[] = ['Judge?', $user->judge ? __('Y') : __('N')];
     $userTable[] = ['Steward?', $user->steward ? __('Y') : __('N')];
