@@ -19,5 +19,5 @@ CREATE TABLE users (
   steward BOOLEAN,
   staff BOOLEAN
 );
-INSERT INTO "users" VALUES(2,'testadmin@test.com','$2y$10$/SJXsjLNJmezznjex.YAOehQm12mtddK0Nx2.upygdrV0WyNEPux2','Test','Admin','101 Test Drive','Building 21','Room 314','Austin','TX','United States','78727','', NULL, NULL, NULL, NULL);
+INSERT INTO "users" VALUES(2,'testadmin@test.com','$2y$10$/SJXsjLNJmezznjex.YAOehQm12mtddK0Nx2.upygdrV0WyNEPux2','Test','Admin','101 Test Drive','Building 21','Room 314','Austin','TX','United States','78727','','', NULL, NULL, NULL, NULL);
 CREATE INDEX users_email ON users (email);
