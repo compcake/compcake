@@ -13,6 +13,7 @@ CREATE TABLE users (
   country CHAR(80),
   postcode CHAR(80),
   aha_number CHAR(10),
+  affiliation CHAR(80),
   bjcp CHAR(10),
   judge BOOLEAN,
   steward BOOLEAN,
