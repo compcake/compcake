@@ -65,6 +65,7 @@ class PaymentsController extends AppController
                     Configure::read('paypal_secret'))
             );
             $apiContext->setConfig(['mode' => Configure::read('paypal_mode')]);
+            $this->request->session()->write('apictx', $apiContext);
             $payer = new Payer();
             $payer->setPaymentMethod("paypal");
             $items = array();
@@ -88,6 +89,7 @@ class PaymentsController extends AppController
                 ->setItemList($itemList)
                 ->setDescription(Configure::read('competition'))
                 ->setInvoiceNumber($payment->id);
+            $this->request->session()->write('transaction', $transaction);
             $redirectUrls = new RedirectUrls();
             $redirectUrls->setReturnUrl(Router::url(['action' => 'complete', $payment->id], true))
                 ->setCancelUrl(Router::url(['action' => 'delete', $payment->id], true));
@@ -136,20 +138,11 @@ class PaymentsController extends AppController
             /*
              * Create a apiContext object and set up the payment transaction.
              */
-            $apiContext = new \PayPal\Rest\ApiContext(
-                new \PayPal\Auth\OAuthTokenCredential(
-                    Configure::read('paypal_clientid'),
-                    Configure::read('paypal_secret'))
-            );
-            $apiContext->setConfig(['mode' => Configure::read('paypal_mode')]);
+            $apiContext = $this->request->session()->read('apictx');
             $pmt = Payment::get($payment->paymentid, $apiContext);
+            $transaction = $this->request->session()->read('transaction');
             $execution = new PaymentExecution();
             $execution->setPayerId($payment->payerid);
-            $transaction = new Transaction();
-            $amount = new Amount();
-            $amount->setCurrency('USD');
-            $amount->setTotal($payment->total);
-            $transaction->setAmount($amount);
             $execution->addTransaction($transaction);
             try {
                 $pmt->execute($execution, $apiContext);
