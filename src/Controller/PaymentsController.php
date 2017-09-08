@@ -136,6 +136,7 @@ class PaymentsController extends AppController
              * Create a apiContext object and set up the payment transaction.
              */
             $apiContext = $this->request->session()->read('apictx');
+            $apiContext->setConfig(['mode' => Configure::read('paypal_mode')]);
             $pmt = Payment::get($payment->paymentid, $apiContext);
             $transaction = $this->request->session()->read('transaction');
             $execution = new PaymentExecution();
