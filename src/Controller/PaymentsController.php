@@ -93,6 +93,7 @@ class PaymentsController extends AppController
             $redirectUrls = new RedirectUrls();
             $redirectUrls->setReturnUrl(Router::url(['action' => 'complete', $payment->id], true))
                 ->setCancelUrl(Router::url(['action' => 'delete', $payment->id], true));
+            $this->request->session()->write('payment', $payment);
             $pmt = new Payment();
             $pmt->setIntent("sale")
                 ->setPayer($payer)
@@ -123,11 +124,7 @@ class PaymentsController extends AppController
     public function complete($id = null)
     {
         $this->request->allowMethod(['get', 'complete']);
-        $uid = $this->Auth->user('id');
-        $payment = $this->Payments->get($id);
-        if ($payment->user_id != $uid) {
-            throw new NotFoundException;
-        }
+        $payment = $this->request->session()->read('payment');
         $payment = $this->Payments->patchEntity($payment,
             [
                 'paymentid' => $this->request->query('paymentId'),
@@ -152,7 +149,7 @@ class PaymentsController extends AppController
                     $paidEntriesUpdate = $entriesTable->query();
                     $paidEntriesUpdate->update()
                         ->set(['paid' => true])
-                        ->where(['user_id' => $uid, 'payment_id' => $payment->id])
+                        ->where(['user_id' => $this->Auth->user('id'), 'payment_id' => $payment->id])
                         ->execute();
                     $this->Flash->success(__('Thank you for your payment!'));
                 }
