@@ -155,7 +155,8 @@ class PaymentsController extends AppController
                     $this->Flash->success(__('Thank you for your payment!'));
                 }
             } catch (\PayPal\Exception\PayPalConnectionException $ex) {
-                $this->Flash->error(__('Unable to process payment, PayPal returned error: ' . $ex->getMessage()));
+                $err = json_decode($ex->getData());
+                $this->Flash->error(__('Unable to process payment, PayPal returned error: ' . $ex->getMessage() . ' ' . $err->message));
             }
         } else {
             $this->Flash->error(__('Unable to update payment record'));
