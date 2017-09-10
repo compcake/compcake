@@ -102,7 +102,8 @@ class PaymentsController extends AppController
             try {
                 $pmt->create($apiContext);
             } catch (\PayPal\Exception\PayPalConnectionException $ex) {
-                $this->Flash->error(__('Unable to process payment, PayPal returned error: ' . $ex->getMessage()));
+                $err = json_decode($ex->getData());
+                $this->Flash->error(__('Unable to process payment, PayPal returned error: ') . $ex->getMessage() . ' ' . $err->message);
                 return $this->redirect(['controller' => 'entries', 'action' => 'index']);
             }
             return $this->redirect($pmt->getApprovalLink());
@@ -156,7 +157,7 @@ class PaymentsController extends AppController
                 }
             } catch (\PayPal\Exception\PayPalConnectionException $ex) {
                 $err = json_decode($ex->getData());
-                $this->Flash->error(__('Unable to process payment, PayPal returned error: ' . $ex->getMessage() . ' ' . $err->message));
+                $this->Flash->error(__('Unable to process payment, PayPal returned error: ') . $ex->getMessage() . ' ' . $err->message);
             }
         } else {
             $this->Flash->error(__('Unable to update payment record'));
