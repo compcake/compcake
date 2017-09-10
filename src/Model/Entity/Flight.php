@@ -8,11 +8,11 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property int $session_id
- * @property int $steward_id
  * @property int $round
  *
  * @property \App\Model\Entity\Session $session
  * @property \App\Model\Entity\Steward $steward
+ * @property \App\Model\Entity\Entry[] $entries
  * @property \App\Model\Entity\Judge[] $judges
  */
 class Flight extends Entity

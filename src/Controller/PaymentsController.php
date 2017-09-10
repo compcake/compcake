@@ -93,7 +93,6 @@ class PaymentsController extends AppController
             $redirectUrls = new RedirectUrls();
             $redirectUrls->setReturnUrl(Router::url(['action' => 'complete', $payment->id], true))
                 ->setCancelUrl(Router::url(['action' => 'delete', $payment->id], true));
-            $this->request->session()->write('payment', $payment);
             $pmt = new Payment();
             $pmt->setIntent("sale")
                 ->setPayer($payer)
@@ -102,8 +101,7 @@ class PaymentsController extends AppController
             try {
                 $pmt->create($apiContext);
             } catch (\PayPal\Exception\PayPalConnectionException $ex) {
-                $err = json_decode($ex->getData());
-                $this->Flash->error(__('Unable to process payment, PayPal returned error: ') . $ex->getMessage() . ' ' . $err->message);
+                $this->Flash->error(__('Unable to process payment, PayPal returned error: ' . $ex->getMessage()));
                 return $this->redirect(['controller' => 'entries', 'action' => 'index']);
             }
             return $this->redirect($pmt->getApprovalLink());
@@ -125,7 +123,11 @@ class PaymentsController extends AppController
     public function complete($id = null)
     {
         $this->request->allowMethod(['get', 'complete']);
-        $payment = $this->request->session()->read('payment');
+        $uid = $this->Auth->user('id');
+        $payment = $this->Payments->get($id);
+        if ($payment->user_id != $uid) {
+            throw new NotFoundException;
+        }
         $payment = $this->Payments->patchEntity($payment,
             [
                 'paymentid' => $this->request->query('paymentId'),
@@ -137,7 +139,6 @@ class PaymentsController extends AppController
              * Create a apiContext object and set up the payment transaction.
              */
             $apiContext = $this->request->session()->read('apictx');
-            $apiContext->setConfig(['mode' => Configure::read('paypal_mode')]);
             $pmt = Payment::get($payment->paymentid, $apiContext);
             $transaction = $this->request->session()->read('transaction');
             $execution = new PaymentExecution();
@@ -151,13 +152,12 @@ class PaymentsController extends AppController
                     $paidEntriesUpdate = $entriesTable->query();
                     $paidEntriesUpdate->update()
                         ->set(['paid' => true])
-                        ->where(['user_id' => $this->Auth->user('id'), 'payment_id' => $payment->id])
+                        ->where(['user_id' => $uid, 'payment_id' => $payment->id])
                         ->execute();
                     $this->Flash->success(__('Thank you for your payment!'));
                 }
             } catch (\PayPal\Exception\PayPalConnectionException $ex) {
-                $err = json_decode($ex->getData());
-                $this->Flash->error(__('Unable to process payment, PayPal returned error: ') . $ex->getMessage() . ' ' . $err->message);
+                $this->Flash->error(__('Unable to process payment, PayPal returned error: ' . $ex->getMessage()));
             }
         } else {
             $this->Flash->error(__('Unable to update payment record'));

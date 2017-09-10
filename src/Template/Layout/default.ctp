@@ -63,29 +63,33 @@ if (!$this->fetch('title')) {
  */
 if (!$this->fetch('tb_nav')) {
     $this->start('tb_nav');
-    $navListLeft = [
-        $this->Html->link(__('Home'), ['controller' => 'pages', 'action' => 'index']),
-        $this->Html->link(__('Rules'), ['controller' => 'pages', 'action' => 'rules']),
-        $this->Html->link(__('Entries'), ['controller' => 'entries', 'action' => 'index']),
-        $this->Html->link(__('Locations'), ['controller' => 'locations', 'action' => 'index']),
-        $this->Html->link(__('Judging'), ['controller' => 'sessions', 'action' => 'index']),
-    ];
-    $navListRight = [
-        $this->Html->link(__(''),
+    $navListLeft = array();
+    $navListLeft[] = $this->Html->link(__('Home'), '/');
+    if (!isset($this->request->params['prefix'])) {
+        $navListLeft[] = $this->Html->link(__('Rules'), ['controller' => 'pages', 'action' => 'rules']);
+        $navListLeft[] = $this->Html->link(__('Entries'), ['controller' => 'entries', 'action' => 'index']);
+        $navListLeft[] = $this->Html->link(__('Locations'), ['controller' => 'locations', 'action' => 'index']);
+        $navListLeft[] = $this->Html->link(__('Judging'), ['controller' => 'sessions', 'action' => 'index']);
+    }
+    if ($this->request->session()->read('priv.admin')) {
+        $navListLeft[] = $this->Html->link(__('Admin'),
+            ['controller' => 'pages', 'action' => 'admin']);
+    }
+    if ($this->request->session()->read('priv.staff')) {
+        $navListLeft[] = $this->Html->link(__('Staff'),
+            ['controller' => 'pages', 'action' => 'staff']);
+    }
+
+    $navListRight = array();
+    if (!isset($this->request->params['prefix'])) {
+        $navListRight[] = $this->Html->link(__(''),
             ['controller' => 'users', 'action' => 'index'],
-            ['class' => 'glyphicon glyphicon-user']),
-        $this->Html->link(__(''),
-            ['controller' => 'users', 'action' => 'logout'],
-            ['class' => 'glyphicon glyphicon-log-out']),
-    ];
-    /**
-    echo '<div class="navbar-header">';
-    echo ('<span class="navbar-brand">' .
-        $this->Html->link(__('CompCake'),
-        ['controller' => 'pages', 'action' => 'index']) .
-        '</span>');
-    echo '</div>';
-     **/
+            ['class' => 'glyphicon glyphicon-user']);
+
+    }
+    $navListRight[] = $this->Html->link(__(''),
+        ['controller' => 'users', 'action' => 'logout'],
+        ['class' => 'glyphicon glyphicon-log-out']);
     echo '<ul class="nav navbar-nav navbar-left">';
     foreach ($navListLeft as $nav) {
         echo '<li>' . $nav . '</li>';

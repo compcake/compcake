@@ -111,9 +111,8 @@ class AppController extends Controller
      *
      * 1. If prefix is not set, return true.
      * 2. If user is null return false. Note this test is second so that login/logout can work.
-     * 3. If prefix is set and we cannot find role(s), return false.
-     * 4. If prefix is set and the user has the role associated with
-     *    the prefix, return true.
+     * 3. If user is an admin, return true.
+     * 4. If user is a staff member and the prefix is staff return true;
      * 5. Return false.
      *
      * If the user is logged in, sets the current user's ID on the table object as a side effect.
@@ -139,22 +138,14 @@ class AppController extends Controller
             return false;   // 2
         }
 
-        $query = $users->find('all')
-            ->contain(['Roles'])
-            ->where(['id' => $user['id']]);
-        if (!$query) {
-            return false;   // 3
+        if ($this->request->session()->read('priv.admin')) {
+            return true;    // 3
         }
 
-        foreach ($query as $user) {
-            foreach ($user['roles'] as $role) {
-                $r = strtolower($role['role']);
-                if ($prefix === $r) {
-                    return true; // 4
-                }
-            }
+        if ($this->request->session()->read('priv.staff') && $prefix == 'staff') {
+            return true;    // 4
         }
-        return false;   // 5
+        return false;       // 5
     }
 
     /**

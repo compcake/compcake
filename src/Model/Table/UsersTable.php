@@ -57,7 +57,42 @@ class UsersTable extends AppTable
      */
     public function findFilterByCurrentUser(Query $query, array $options)
     {
-        return $query->where(['id' => $this->getUserId()]);
+        return $query->where(['id' => $this->getUserId()])->contain(['Roles']);
+    }
+
+    /**
+     * Is this user a site Admin?
+     *
+     * @param $user
+     * @return bool
+     */
+    public function isAdmin($user)
+    {
+        foreach ($user['roles'] as $r) {
+            if ($r['role'] == 'Admin') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Is this user a site Staff member? Note admins are also staff...
+     *
+     * @param $user
+     * @return bool
+     */
+    public function isStaff($user)
+    {
+        foreach ($user['roles'] as $r) {
+            if ($r['role'] == 'Staff') {
+                return true;
+            }
+            if ($r['role'] == 'Admin') {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

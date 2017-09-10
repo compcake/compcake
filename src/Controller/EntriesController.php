@@ -5,6 +5,7 @@ use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use Cake\Network\Exception\NotAcceptableException;
 use Cake\Network\Exception\NotFoundException;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Core\Configure;
 
 class EntriesController extends AppController
@@ -108,6 +109,32 @@ class EntriesController extends AppController
             $this->request->data += [ 'user_id' => strval($this->Auth->user('id')), 'paid' => false ];
         }
         return $this->Crud->execute();
+    }
+
+    public function checkin()
+    {
+        if (!$this->request->session()->read('priv.staff')) {
+            throw new NotAcceptableException;
+        }
+        if ($this->request->is('post')) {
+            $entry = null;
+            try {
+                $entry = $this->Entries->get($this->request->data['id']);
+            } catch (RecordNotFoundException $r) {
+                $this->Flash->error('Entry number was not found');
+                return null;
+            }
+            if (!is_numeric($this->request->data['bin'])) {
+                $this->Flash->error('Bin number must be an integer');
+                return null;
+            }
+            try {
+                $entry = $this->Entries->patchEntity($entry, $this->request->data);
+                $this->Entries->save($entry);
+            } catch (Exception $e) {
+                $this->Flash->error('Problem updating entry');
+            }
+        }
     }
 
     public function download($id = null)

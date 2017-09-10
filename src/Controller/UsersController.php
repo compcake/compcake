@@ -82,6 +82,8 @@ class UsersController extends AppController
             $user = $this->Auth->identify();
             if ($user) {
                 $this->Auth->setUser($user);
+                $this->request->session()->write('priv.admin', $this->Users->isAdmin($user));
+                $this->request->session()->write('priv.staff', $this->Users->isStaff($user));
                 return $this->redirect($this->Auth->redirectUrl());
             }
             $this->Flash->error('Authorization failed.');
@@ -92,6 +94,8 @@ class UsersController extends AppController
 
     public function logout()
     {
+        $this->request->session()->write('priv.admin', false);
+        $this->request->session()->write('priv.staff', false);
         $this->Flash->success('You are now logged out.');
         return $this->redirect($this->Auth->logout());
     }

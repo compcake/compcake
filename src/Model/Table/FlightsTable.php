@@ -10,7 +10,6 @@ use Cake\Validation\Validator;
  * Flights Model
  *
  * @property \Cake\ORM\Association\BelongsTo $Sessions
- * @property \Cake\ORM\Association\BelongsTo $Stewards
  * @property \Cake\ORM\Association\BelongsToMany $Entries
  * @property \Cake\ORM\Association\BelongsToMany $Judges
  *
@@ -42,9 +41,6 @@ class FlightsTable extends Table
         $this->belongsTo('Sessions', [
             'foreignKey' => 'session_id',
             'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Stewards', [
-            'foreignKey' => 'steward_id'
         ]);
         $this->belongsToMany('Entries', [
             'foreignKey' => 'flight_id',
@@ -88,7 +84,6 @@ class FlightsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['session_id'], 'Sessions'));
-        $rules->add($rules->existsIn(['steward_id'], 'Stewards'));
 
         return $rules;
     }
