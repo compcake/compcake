@@ -59,6 +59,10 @@
             <td><?= h($user->bjcp) ?></td>
         </tr>
         <tr>
+            <th scope="row"><?= __('Club') ?></th>
+            <td><?= h($user->club) ?></td>
+        </tr>
+        <tr>
             <th scope="row"><?= __('Interested in Judging?') ?></th>
             <td><?= $user->judge ? __('Yes') : __('No') ?></td>
         </tr>
