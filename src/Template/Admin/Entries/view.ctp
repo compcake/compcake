@@ -9,7 +9,8 @@
         <tr>
             <th scope="row"><?= __('User') ?></th>
             <td><?= $this->Html->link(h($entry->user->first_name . " " . $entry->user->last_name),
-                    ['controller' => 'Users', 'action' => 'view', $entry->user_id]) ?></td>
+                    ['controller' => 'Users', 'action' => 'view', $entry->user_id]) .
+                    ' - ' . h($entry->user->club) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Entry Name') ?></th>
